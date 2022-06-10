@@ -5,18 +5,19 @@ const startButton = document.querySelector(`.btn__reset`);
 const overlay = document.querySelector('.start');
 const heartContainer = document.querySelector('#scoreboard ol');
 let missed = 0;
+const winScreenDelay = 2000;
 const phrases = [
     "Survivor",
     "The X Files",
     "American Horror Story",
     "Stranger Things",
-    "Drag Race",
+    "RuPauls Drag Race",
     "Family Guy",
     "The Simpsons",
     "Breaking Bad",
     "The Sopranos",
     "The Golden Girls",
-    "Wheel of Fortune"    
+    "The Wheel of Fortune"    
 ];
 
 
@@ -101,10 +102,12 @@ const showResetButton = () => {
 }
 
 // Check against win/lose conditions
-const checkWin =  () => {
+async function checkWin () {
     const letterLI = document.querySelectorAll('.letter').length;
     const showLI = document.querySelectorAll('.show').length;
     if (letterLI === showLI) {
+        disableKeyboard();
+        await sleep(winScreenDelay);
         overlay.classList.add('win');
         const winMessage = "Congratulations!<br>You're a winner, baby!!"; 
         overlay.firstElementChild.innerHTML = winMessage;
@@ -112,6 +115,8 @@ const checkWin =  () => {
         showResetButton();
     }
     else if (missed == 5) {
+        disableKeyboard();
+        await sleep(winScreenDelay);
         overlay.classList.add('lose');
         overlay.firstElementChild.textContent = 'Sorry, you ran out of guesses, want to try again?';
         overlay.style.display = 'flex';
