@@ -131,6 +131,10 @@ button {
   background-color: #D94545;
 }
 
+.right {
+  background-color: var(--color-win);
+}
+
 .btn__reset,
 .reset {
   padding: 8px;

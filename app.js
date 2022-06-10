@@ -203,6 +203,9 @@ qwerty.addEventListener('click', (e) => {
         let match = checkLetter(clickedButton.textContent);
         if (match == null) {
             wrongchoice(e.target);
+        }
+        else {
+            clickedButton.classList.add('right');
         } 
     }
     checkWin();
