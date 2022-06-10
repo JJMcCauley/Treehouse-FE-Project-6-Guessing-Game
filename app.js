@@ -15,7 +15,8 @@ const phrases = [
     "The Simpsons",
     "Breaking Bad",
     "The Sopranos",
-    "The Golden Girls"    
+    "The Golden Girls",
+    "Wheel of Fortune"    
 ];
 
 
