@@ -28,9 +28,18 @@ const getRandomPhraseAsArray = arr => {
     return chosenPhraseAsArray;
 }
 
+// sleep function, taken from https://www.sitepoint.com/delay-sleep-pause-wait/
+function sleep(ms) {
+    return new Promise(
+      resolve => setTimeout(resolve, ms)
+    );
+  }
+
 // adds the lttters of a string to the display
-const addPhraseToDisplay = arr => {
+async function addPhraseToDisplay(arr) {
+    disableKeyboard();
     for (let i = 0; i < arr.length; i++) {
+        await sleep(150);
         const li = document.createElement('li');
         const letter = arr[i];
         li.textContent = letter;
@@ -42,6 +51,32 @@ const addPhraseToDisplay = arr => {
             li.className = 'space';
         }
     }
+    enableKeyboard();
+}
+
+// disables keyboard while phrase is loaded
+const disableKeyboard = () => {
+    const keyRows = document.getElementsByClassName('keyrow');
+    for (let i = 0; i < keyRows.length; i++) {
+        let keyboardKeys = keyRows[i].children;
+        for (let y = 0; y < keyboardKeys.length; y++) {
+            keyboardKeys[y].disabled = true;
+            keyboardKeys[y].className = 'chosen';
+        }
+    }
+}
+
+// renables keyboard afterward
+const enableKeyboard = () => {
+    const keyRows = document.getElementsByClassName('keyrow');
+    for (let i = 0; i < keyRows.length; i++) {
+        let keyboardKeys = keyRows[i].children;
+        for (let y = 0; y < keyboardKeys.length; y++) {
+            keyboardKeys[y].disabled = false;
+            keyboardKeys[y].className = '';
+        }
+    }
+
 }
 
 // check if a ltter is in the phrase
@@ -58,11 +93,13 @@ const  checkLetter = btn => {
     return match;
 }
 
+// Replaces Start button with reset button
 const showResetButton = () => {
     startButton.textContent = 'Replay';
     startButton.className = 'reset';
 }
 
+// Check against win/lose conditions
 const checkWin =  () => {
     const letterLI = document.querySelectorAll('.letter').length;
     const showLI = document.querySelectorAll('.show').length;
@@ -81,12 +118,16 @@ const checkWin =  () => {
     }   
 }
 
+// Adds to missed score and removes a heart
 const wrongchoice = () => {
     missed++;
-    let heart = heartContainer.lastElementChild;
-    heartContainer.removeChild(heart);
+    let hearts = heartContainer.children;
+    heartIndex = 5 - missed;
+    let heart = hearts[heartIndex].firstElementChild;
+    heart.src = 'images/lostHeart.png';
 }
 
+// Resets the keyboard for another round
 const resetKeyboard = () => {
     const keyRows = document.getElementsByClassName('keyrow');
     for (let i = 0; i < keyRows.length; i++) {
@@ -98,48 +139,56 @@ const resetKeyboard = () => {
     }
 }
 
-const refillHearts = () => {
-    if (missed > 0) {
-        for (let i = 0; i < missed; i++) {
-            const li = document.createElement('li');
-            const img = document.createElement('img');
-            li.appendChild(img);
-            li.className = 'tries';
-            img.src = "images/liveHeart.png";
-            img.style.height = '35px';
-            img.style.width = '30px';
-            heartContainer.appendChild(li);
-        }
+// refills hearts when playing again
+async function refillHearts() {
+    const hearts = heartContainer.children;
+    for (let i = 0; i < hearts.length; i++)
+    {
+        await sleep(300);
+        const heart = hearts[i].firstElementChild;
+        heart.src = 'images/liveHeart.png';
     }
     missed = 0;
 }
 
+// removes old phrase from dom
 const removePhrase = () => {
     while (phraseUL.firstChild) {
         phraseUL.removeChild(phraseUL.firstChild);
     }
 }
 
+// changes header when playing game
 const changeHeader = () => {
     const header = document.querySelector('.header');
     header.innerHTML = `<h2>Television Shows</h2>`
 }
 
-// listen for the start game button to be pressed
+// removes overlay and puts phrase on the screen
+const startGame = () => {
+    overlay.style.display = 'none';
+    changeHeader();
+    addPhraseToDisplay(phraseArray);
+}
+
+// resets the game to beginning state after winning or losing
+const resetGame = () => {
+    overlay.style.display = 'none';
+    overlay.className = '';
+    resetKeyboard();
+    refillHearts();
+    removePhrase();
+    phraseArray = getRandomPhraseAsArray(phrases);
+    addPhraseToDisplay(phraseArray);
+}
+
+// listen for the start or reset button to be pressed
 startButton.addEventListener('click', () => {
     if(startButton.className == `btn__reset`) {
-        overlay.style.display = 'none';
-        changeHeader();
+        startGame();
     }
     else if (startButton.className == 'reset') {
-        overlay.style.display = 'none';
-        overlay.className = '';
-        resetKeyboard();
-        refillHearts();
-        removePhrase();
-        phraseArray = getRandomPhraseAsArray(phrases);
-        addPhraseToDisplay(phraseArray);
-
+        resetGame();
     }
 });
 
@@ -157,8 +206,9 @@ qwerty.addEventListener('click', (e) => {
     checkWin();
 });
 
+// sets initial phrase
 let phraseArray = getRandomPhraseAsArray(phrases);
-addPhraseToDisplay(phraseArray);
+disableKeyboard();
 
 
 

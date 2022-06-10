@@ -98,7 +98,8 @@ button {
   border-radius: 5px;
   transition: 
     color .8s ease-in, 
-    background-color .8s ease-in;
+    background-color .8s ease-in,
+    background .8s ease-in;
 }
 
 .space {
