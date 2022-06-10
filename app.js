@@ -119,8 +119,9 @@ const checkWin =  () => {
 }
 
 // Adds to missed score and removes a heart
-const wrongchoice = () => {
+const wrongchoice = (btn) => {
     missed++;
+    btn.classList.add('wrong');
     let hearts = heartContainer.children;
     heartIndex = 5 - missed;
     let heart = hearts[heartIndex].firstElementChild;
@@ -192,15 +193,16 @@ startButton.addEventListener('click', () => {
     }
 });
 
-// listen for the onscreen keyboard toe be clicked
+// listen for the onscreen keyboard to be clicked
 qwerty.addEventListener('click', (e) => {
     const clickedButton = e.target;
     if(clickedButton.tagName === 'BUTTON' && clickedButton.className != 'chosen'){
         clickedButton.className = 'chosen';
+        clickedButton.classList.add('shake');
         clickedButton.disabled = true;
         let match = checkLetter(clickedButton.textContent);
         if (match == null) {
-            wrongchoice();
+            wrongchoice(e.target);
         } 
     }
     checkWin();
