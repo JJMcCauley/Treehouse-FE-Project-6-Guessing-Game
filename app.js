@@ -123,7 +123,7 @@ const wrongchoice = (btn) => {
     missed++;
     btn.classList.add('wrong');
     let hearts = heartContainer.children;
-    heartIndex = 5 - missed;
+    heartIndex = hearts.length - missed;
     let heart = hearts[heartIndex].firstElementChild;
     heart.src = 'images/lostHeart.png';
 }
