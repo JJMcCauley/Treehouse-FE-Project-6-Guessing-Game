@@ -120,10 +120,16 @@ const removePhrase = () => {
     }
 }
 
+const changeHeader = () => {
+    const header = document.querySelector('.header');
+    header.innerHTML = `<h2>Television Shows</h2>`
+}
+
 // listen for the start game button to be pressed
 startButton.addEventListener('click', () => {
     if(startButton.className == `btn__reset`) {
         overlay.style.display = 'none';
+        changeHeader();
     }
     else if (startButton.className == 'reset') {
         overlay.style.display = 'none';
