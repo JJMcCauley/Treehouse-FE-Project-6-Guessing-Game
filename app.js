@@ -1,85 +1,154 @@
 const qwerty = document.getElementById('qwerty');
 const phrase = document.getElementById('phrase');
-let missed = 0;
-
+const phraseUL = document.querySelector('#phrase ul')
 const startButton = document.querySelector(`.btn__reset`);
-
+const overlay = document.querySelector('.start');
+const heartContainer = document.querySelector('#scoreboard ol');
+let missed = 0;
 const phrases = [
-    {
-        quote: `When you become the image of your own imagination its the most powerful thing you could ever do`,
-        speaker: `RuPaul`
-    },
-    {
-        quote: `I could never be a Kardashian because I have talent`,
-        speaker: `Meatiest Tuck`
-    },
-    {
-        quote: `I dont get cute I get drop-dead gorgeous`,
-        speaker: `Alyssa Edwards`
-    },
-    {
-        quote: `No T no shade no pink lemonade`,
-        speaker: `Jasmine Masters`
-    },
-    {
-        quote: `The shade of it all`,
-        speaker: `Latrice Royale`
-    }
+    "Survivor",
+    "The X Files",
+    "American Horror Story",
+    "Stranger Things",
+    "Drag Race",
+    "Family Guy",
+    "The Simpsons",
+    "Breaking Bad",
+    "The Sopranos",
+    "The Golden Girls"    
 ];
-const numberOfPhrases = phrases.length;
 
+
+// return a random phrase from an array
 const getRandomPhraseAsArray = arr => {
+    const numberOfPhrases = phrases.length;
     const randomArrayIndex = Math.floor(Math.random()*numberOfPhrases);
-    const chosenPhrase = arr[randomArrayIndex].quote;
-    const chosenSpeaker = arr[randomArrayIndex].speaker;
+    const chosenPhrase = arr[randomArrayIndex];
     const chosenPhraseAsArray = chosenPhrase.split(``);
     return chosenPhraseAsArray;
 }
 
+// adds the lttters of a string to the display
 const addPhraseToDisplay = arr => {
     for (let i = 0; i < arr.length; i++) {
-        const letter = arr[i];
-        const span = document.createElement('span');
-        span.textContent = letter;
         const li = document.createElement('li');
+        const letter = arr[i];
+        li.textContent = letter;
+        phraseUL.appendChild(li);
         if (letter != ' ') {
             li.className = 'letter';
         }
         else {
-            li.className = '';
+            li.className = 'space';
         }
-        li.appendChild(span);
-        phrase.appendChild(li);
     }
 }
 
+// check if a ltter is in the phrase
 const  checkLetter = btn => {
-    const letters = document.getElementsByClassName('letter');
-    let matchFound = null;
+    let match = null;
+    let letters = document.querySelectorAll("li");
     for (let i = 0; i < letters.length; i++) {
-        const checkedLetter = letters[i].firstElementChild.textContent.toLowerCase();
-        console.log('checked letter: ' + checkedLetter);
-        console.log('button pressed: ' + btn);
-        console.log(btn == checkedLetter);
+        const checkedLetter = letters[i].textContent.toLowerCase();
         if (btn == checkedLetter){
-            letters[i].className = 'show';            
-            matchFound = checkedLetter;
+            letters[i].classList.add('show');            
+            match = checkedLetter;
         }
     }
-    return matchFound;
+    return match;
 }
 
+const showResetButton = () => {
+    startButton.textContent = 'Replay';
+    startButton.className = 'reset';
+}
+
+const checkWin =  () => {
+    const letterLI = document.querySelectorAll('.letter').length;
+    const showLI = document.querySelectorAll('.show').length;
+    if (letterLI === showLI) {
+        overlay.classList.add('win');
+        const winMessage = "Congratulations!<br>You're a winner, baby!!"; 
+        overlay.firstElementChild.innerHTML = winMessage;
+        overlay.style.display = 'flex';
+        showResetButton();
+    }
+    else if (missed == 5) {
+        overlay.classList.add('lose');
+        overlay.firstElementChild.textContent = 'Sorry, you ran out of guesses, want to try again?';
+        overlay.style.display = 'flex';
+        showResetButton();
+    }   
+}
+
+const wrongchoice = () => {
+    missed++;
+    let heart = heartContainer.lastElementChild;
+    heartContainer.removeChild(heart);
+}
+
+const resetKeyboard = () => {
+    const keyRows = document.getElementsByClassName('keyrow');
+    for (let i = 0; i < keyRows.length; i++) {
+        let keyboardKeys = keyRows[i].children;
+        for (let y = 0; y < keyboardKeys.length; y++) {
+            keyboardKeys[y].className = '';
+            keyboardKeys[y].disabled = false;
+        }
+    }
+}
+
+const refillHearts = () => {
+    if (missed > 0) {
+        for (let i = 0; i < missed; i++) {
+            const li = document.createElement('li');
+            const img = document.createElement('img');
+            li.appendChild(img);
+            li.className = 'tries';
+            img.src = "images/liveHeart.png";
+            img.style.height = '35px';
+            img.style.width = '30px';
+            heartContainer.appendChild(li);
+        }
+    }
+    missed = 0;
+}
+
+const removePhrase = () => {
+    while (phraseUL.firstChild) {
+        phraseUL.removeChild(phraseUL.firstChild);
+    }
+}
+
+// listen for the start game button to be pressed
 startButton.addEventListener('click', () => {
-    startButton.parentNode.style.display = 'none';
+    if(startButton.className == `btn__reset`) {
+        overlay.style.display = 'none';
+    }
+    else if (startButton.className == 'reset') {
+        overlay.style.display = 'none';
+        overlay.className = '';
+        resetKeyboard();
+        refillHearts();
+        removePhrase();
+        phraseArray = getRandomPhraseAsArray(phrases);
+        addPhraseToDisplay(phraseArray);
+
+    }
 });
 
+// listen for the onscreen keyboard toe be clicked
 qwerty.addEventListener('click', (e) => {
     const clickedButton = e.target;
-    if(clickedButton.tagName === 'BUTTON'){
+    if(clickedButton.tagName === 'BUTTON' && clickedButton.className != 'chosen'){
         clickedButton.className = 'chosen';
         clickedButton.disabled = true;
-        checkLetter(clickedButton.textContent);
+        let match = checkLetter(clickedButton.textContent);
+        if (match == null) {
+            wrongchoice();
+        } 
     }
+    checkWin();
 });
 
 let phraseArray = getRandomPhraseAsArray(phrases);

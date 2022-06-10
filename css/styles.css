@@ -52,7 +52,9 @@ button {
   border-radius: 5px;
   -webkit-transition: var(--transition);
   -o-transition: var(--transition);
-  transition: var(--transition);
+  transition: 
+    var(--transition),
+    background .6s ease-in;
 }
 
 .main-container {
@@ -77,6 +79,14 @@ button {
 
 /* Phrase */
 
+@keyframes scaling {
+  From {
+      -webkit-transform: scale(1.0);
+  }
+  To {
+      -webkit-transform: scale(1.3);
+  }
+}
 .letter {
   font-size: var(--font-size-medium);
   height: 65px;
@@ -86,6 +96,9 @@ button {
   color: transparent;
   background: var(--color-neutral-light);
   border-radius: 5px;
+  transition: 
+    color .8s ease-in, 
+    background-color .8s ease-in;
 }
 
 .space {
@@ -95,6 +108,7 @@ button {
 .show {
   color: #000;
   background-color: #76CE82;
+  animation: scaling .3s 2 alternate;
 }
 
 /* Keyboard */
@@ -111,13 +125,15 @@ button {
   color: #FFFFFF;
 }
 
-.btn__reset {
+.btn__reset,
+.reset {
   padding: 8px;
   margin: 50px auto;
   background: #FFFFFF;
   border-radius: 5px;
   font-size: var(--font-size-medium);
 }
+
 
 /* Overlay */
 
